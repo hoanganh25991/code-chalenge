@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    function contains(needle){
+        // Per spec, the way to identify NaN is that it is not equal to itself
+        var findNaN = needle !== needle;
+        var indexOf;
+
+        if(!findNaN && typeof Array.prototype.indexOf === 'function'){
+            indexOf = Array.prototype.indexOf;
+        }else{
+            indexOf = function(needle){
+                var i = -1, index = -1;
+
+                for(i = 0; i < this.length; i++){
+                    var item = this[i];
+
+                    if((findNaN && item !== item) || item === needle){
+                        index = i;
+                        break;
+                    }
+                }
+
+                return index;
+            };
+        }
+
+        return indexOf.call(this, needle) > -1;
+    }
+    ;
+
+
+    function getPrimes(max){
+        var sieve = [], i, j, primes = [];
+        for(i = 2; i <= max; ++i){
+            if(!sieve[i]){
+                // i has not been marked -- it is prime
+                primes.push(i);
+                for(j = i << 1; j <= max; j += i){
+                    sieve[j] = true;
+                }
+            }
+        }
+        return primes;
+    }
+
+    var check = function(n, k, primes, result){
+        if(k == 1){
+            var r1 = contains.call(primes, n);
+            if(r1){
+                result.isPrimeSum = true;
+            }
+            return;
+        }
+
+        if(k > 1){
+            primes.forEach(function(prime){
+                n = n - prime;
+                k = k - 1;
+                check(n, k, primes, result);
+            });
+        }
+
+
+        if(n < 1 || k < 0){
+            return;
+        }
+    };
+
+
+    function primeSum(n, k){
+        var primes = getPrimes(n);
+        console.log(primes);
+
+        var result = {isPrimeSum: false};
+
+        check(n, k, primes, result);
+
+        console.log(result.isPrimeSum);
+
+        return result.isPrimeSum;
+    }
+
+    primeSum(11, 2);
+
+</script>
+</body>
+</html>
